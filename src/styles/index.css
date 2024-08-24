@@ -1,12 +1,55 @@
+body {
+  background-color: rgb(146, 141, 141);
+  margin: 100px auto;
+  padding: 0;
+  text-align: center;
+}
+.container {
+  width: 33%;
+  margin: auto;
+  padding: 0;
+  background-color: whitesmoke;
+  box-shadow: 0px 10px 31px 0px rgba(0, 0, 0, 0.77);
+  -webkit-box-shadow: 0px 10px 31px 0px rgba(0, 0, 0, 0.77);
+  -moz-box-shadow: 0px 10px 31px 0px rgba(0, 0, 0, 0.77);
+}
+.container-2 {
+  width: 32%;
+  margin: auto;
+  height: 5px;
+  padding: 0;
+  background-color: whitesmoke;
+  border-top: 1px solid rgb(199, 193, 193);
+}
+.container-3 {
+  width: 31%;
+  margin: auto;
+  height: 5px;
+  padding: 0;
+  background-color: whitesmoke;
+  border-top: 1px solid rgb(199, 193, 193);
+}
 
-/* 
-
-    You can write your own styles here...
-    
-    
-    ...Or you can use the import command to include 
-    other sylesheets into your bunde as well, e.j:
-    
-    import 'relative/path/to/stylesheet.scss';
-
-*/
+ul {
+  margin: 0;
+  padding: 0;
+}
+ul li {
+  border-top: 1px solid rgb(199, 193, 193);
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+li:hover {
+  background-color: white;
+}
+input {
+  border: none;
+  width: 100%;
+  padding: 10px;
+}
+button {
+  background-color: whitesmoke;
+  border: none;
+}
