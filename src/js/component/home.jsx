@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import style from "../../styles/index.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+
+const API_URL = "https://playground.4geeks.com/todo/users";
 
 const Home = () => {
   const [inputValue, setInputValue] = useState("");
@@ -9,16 +11,47 @@ const Home = () => {
   const handleInput = (e) => {
     setInputValue(e.target.value);
   };
+  // fetch api
+  useEffect(() => {
+    fetch(API_URL)
+      .then((response) => response.json())
+      .then((data) => setToDos(data))
+      .catch((error) => console.error("Error fetching data".error));
+  });
+  // add new task via post method to API
   const handleNewTask = (e) => {
     if (e.key === "Enter" && inputValue.trim()) {
-      setToDos([...toDos, inputValue]);
-      setInputValue("");
+      const newTask = { task: inputValue };
+      fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newTask),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setToDos([...toDos, data]);
+          setInputValue("");
+        })
+        .catch((error) => console.error("Adding task error".error));
     }
   };
+
+  // remove task via delete method to API
   const handleRemoveTask = (index) => {
-    const newToDos = toDos.filter((_, i) => i !== index);
-    setToDos(newToDos);
+    const removeTask = toDos[index];
+    fetch(`${API_URL}/${removeTask.id}`, {
+      method: "DELETE",
+    })
+      .then(() => {
+        const newToDos = toDos.filter((_, i) => i !== index);
+        setToDos(newToDos);
+      })
+      .catch((error) => console.error("Delete task error", error));
   };
+  // clear task button
+  // pending here
   return (
     <div>
       <h1>To-Dos!</h1>
