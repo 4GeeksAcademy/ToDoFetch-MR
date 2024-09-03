@@ -1,25 +1,31 @@
 import React, { useState } from "react";
 
 const UserCreation = ({ onUserCreated }) => {
-  // username creation via state input
-  const [username, setUsername] = useState("");
+  const [user_name, setUser_name] = useState("");
+  const [error, setError] = useState("");
 
   const handleCreateUser = () => {
-    if (username.trim()) {
-      fetch(`https://playground.4geeks.com/todo/users/`, {
+    if (user_name.trim()) {
+      fetch(`https://playground.4geeks.com/todo/users/${user_name}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
       })
         .then((response) => {
-          if (response.status === 201) {
-            onUserCreated(username);
+          if (response.ok) {
+            return response.json();
           } else {
-            console.error("Failed to create user");
+            throw new Error("Failed to create user");
           }
         })
-        .catch((error) => console.error("Error creating user:", error));
+        .then((data) => {
+          onUserCreated(user_name);
+        })
+        .catch((error) => {
+          console.error("Error creating user:", error);
+          setError("Failed to create user. Please try again.");
+        });
     }
   };
 
@@ -27,9 +33,9 @@ const UserCreation = ({ onUserCreated }) => {
     <div>
       <input
         type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Enter username"
+        value={user_name}
+        onChange={(e) => setUser_name(e.target.value)}
+        placeholder="Enter your name"
       />
       <button onClick={handleCreateUser}>Create User</button>
     </div>

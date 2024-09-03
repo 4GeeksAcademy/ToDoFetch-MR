@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import UserCreation from "./userCreation";
+import UserCreation from "./UserCreation";
 import TodoList from "./ToDoList";
 
 const Home = () => {
-  // keep track of user_name
-  const [user_name, setuser_name] = useState(null);
-  const handleUserCreated = (newuser_name) => {
-    setuser_name(newuser_name);
+  const [user_name, setUser_name] = useState(null);
+
+  const handleUserCreated = (newUser_name) => {
+    setUser_name(newUser_name);
   };
 
   return (
