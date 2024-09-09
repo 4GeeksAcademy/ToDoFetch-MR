@@ -6,7 +6,7 @@ const TodoList = ({ user_name }) => {
   const [inputValue, setInputValue] = useState("");
   const [todos, setTodos] = useState([]);
 
-  const API_URL = `https://playground.4geeks.com/todo/users/${user_name}`;
+  const API_URL = `https://playground.4geeks.com/todo/todos/${user_name}`;
 
   useEffect(() => {
     fetchTodos();
@@ -23,18 +23,18 @@ const TodoList = ({ user_name }) => {
 
   const updateTodos = (newTodos) => {
     fetch(API_URL, {
-      method: "PUT",
+      method: "POST",
       body: JSON.stringify(newTodos),
       headers: { "Content-Type": "application/json" },
     })
       .then((response) => response.json())
-      .then(() => setTodos(newTodos))
+      .then(() => setTodos([...todos, newTodos]))
       .catch((error) => console.error("Error updating todos:", error));
   };
 
   const handleNewTask = (e) => {
     if (e.key === "Enter" && inputValue.trim()) {
-      const newTodos = [...todos, { label: inputValue.trim(), done: false }];
+      const newTodos = { label: inputValue.trim(), done: false };
       updateTodos(newTodos);
       setInputValue("");
     }
