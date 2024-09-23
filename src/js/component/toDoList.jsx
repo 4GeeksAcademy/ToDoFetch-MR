@@ -2,75 +2,80 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
-const TodoList = ({ user_name }) => {
-  const [inputValue, setInputValue] = useState("");
+const TodoList = ({ user_name, setUser_name }) => {
   const [todos, setTodos] = useState([]);
-
-  const API_URL = `https://playground.4geeks.com/todo/todos/${user_name}`;
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
-    fetchTodos();
-  }, []);
-
-  const fetchTodos = () => {
-    fetch(API_URL)
+    fetch(`https://playground.4geeks.com/todo/users/${user_name}`)
       .then((response) => response.json())
-      .then((data) => {
-        setTodos(Array.isArray(data) ? data : []);
-      })
+      .then((data) => setTodos(data.todos || []))
       .catch((error) => console.error("Error fetching todos:", error));
-  };
+  }, [user_name]);
 
-  const updateTodos = (newTodos) => {
-    fetch(API_URL, {
+  const addNewTask = () => {
+    if (!inputValue.trim()) return;
+
+    const newTask = { label: inputValue.trim(), is_done: false };
+    setInputValue("");
+
+    fetch(`https://playground.4geeks.com/todo/todos/${user_name}`, {
       method: "POST",
-      body: JSON.stringify(newTodos),
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newTask),
     })
       .then((response) => response.json())
-      .then(() => setTodos([...todos, newTodos]))
-      .catch((error) => console.error("Error updating todos:", error));
+      .then((data) => {
+        setTodos([...todos, data]);
+      })
+      .catch((error) => console.error("Error adding task:", error));
   };
 
-  const handleNewTask = (e) => {
-    if (e.key === "Enter" && inputValue.trim()) {
-      const newTodos = { label: inputValue.trim(), done: false };
-      updateTodos(newTodos);
-      setInputValue("");
+  const deleteTask = (id) => {
+    fetch(`https://playground.4geeks.com/todo/todos/${id}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to delete task");
+        }
+        setTodos(todos.filter((todo) => todo.id !== id));
+      })
+      .catch((error) => console.error("Error deleting task:", error));
+  };
+
+  const handleCleanAllTasks = async () => {
+    try {
+      await fetch(`https://playground.4geeks.com/todo/users/${user_name}`, {
+        method: "DELETE",
+      });
+      setTodos([]);
+      setUser_name(null);
+    } catch (error) {
+      console.error("Failed to delete user:", error);
     }
-  };
-
-  const handleRemoveTask = (index) => {
-    const newTodos = todos.filter((_, i) => i !== index);
-    updateTodos(newTodos);
-  };
-
-  const handleCleanAllTasks = () => {
-    fetch(API_URL, { method: "DELETE" })
-      .then(() => setTodos([]))
-      .catch((error) => console.error("Error deleting user:", error));
   };
 
   return (
     <div>
       <h2>{user_name}'s To-Do List</h2>
-      <div>
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleNewTask}
-          placeholder="Add a new task"
-        />
-      </div>
+      <input
+        type="text"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") addNewTask();
+        }}
+        placeholder="Add a new task"
+      />
       <ul>
         {todos.length === 0 ? (
           <li>No tasks, add a task</li>
         ) : (
-          todos.map((todo, index) => (
-            <li key={index}>
+          todos.map((todo) => (
+            <li key={todo.id || todo.label}>
               <span>{todo.label}</span>
-              <button onClick={() => handleRemoveTask(index)}>
+              <button onClick={() => deleteTask(todo.id)}>
                 <FontAwesomeIcon icon={faTrash} />
               </button>
             </li>
